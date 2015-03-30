@@ -15,17 +15,20 @@ func TestParseEndpointPositive(t *testing.T) {
 		{`relation : interface ={"user": "ubuntu", "password":"Kr@(ken][>}#"}`, "relation", "interface", `{"user": "ubuntu", "password":"Kr@(ken][>}#"}`},
 		{` rel : iface = {"valid": "JSON", "more":"JSON"}`, "rel", "iface", `{"valid": "JSON", "more":"JSON"}`},
 	}
+	fmt.Println("Starting positive ParseVirtualEnpoint tests.")
 	for _, a := range positives {
-		fmt.Println(a.input)
-		endpoint, err := ParseEndpoint(a.input)
-		fmt.Println(endpoint, err)
+		fmt.Printf("Input: %s\n", a.input)
+		endpoint, err := ParseVirtualEndpoint(a.input)
+		fmt.Printf("Endpoint: %#v\n", endpoint)
 		if err != nil {
 			t.Error(err)
 		}
-		if endpoint.relation != a.rel || endpoint.iface != a.iface || endpoint.data != a.json {
+		fmt.Printf("Payload: %#v\n", endpoint.Payload)
+		if endpoint.Relation != a.rel || endpoint.Interface != a.iface || endpoint.Payload == nil {
 			t.Errorf("incorrect output returned %q for input %q", endpoint, a.input)
 		}
 	}
+	fmt.Println()
 }
 
 // TestParseEndpointNegative tests input strings that should fail and return error.
@@ -40,12 +43,14 @@ func TestParseEndpointNegative(t *testing.T) {
 		{`relation:interface={"key":"value"`, "relation", "interface", ""},
 		{`relation:interface = {"key : value"}`, "relation", "interface", ""},
 	}
+	fmt.Println("Staring negative ParseVirtualEndpoint tests.")
 	for _, b := range negatives {
-		fmt.Println(b.input)
-		endpoint, err := ParseEndpoint(b.input)
-		fmt.Println(endpoint, err)
+		fmt.Printf("Input: %s\n", b.input)
+		endpoint, err := ParseVirtualEndpoint(b.input)
+		fmt.Printf("Endpoint: %#v\n", endpoint)
 		if err == nil {
 			t.Errorf("no error generated for bad input %q", b.input)
 		}
 	}
+	fmt.Println()
 }

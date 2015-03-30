@@ -4,39 +4,42 @@ import "encoding/json"
 import "fmt"
 import "strings"
 
-type Endpoint struct {
-	relation string
-	iface    string
-	data     string
+// VirtualEndpoint
+type VirtualEndpoint struct {
+	Relation string
+	Interface    string
+	Payload     map[string]interface{}
 }
 
-// ParseEndpoint takes a sigle endpoint string and parses out the relation, interface, and JSON data.
-// relation:interface=JSON
-func ParseEndpoint(str string) (Endpoint, error) {
-	var endpoint Endpoint
-	relation_index := strings.Index(str, ":")
+// ParseVirtualEndpoint takes a single endpoint string and converts it to a
+// VirtualEndpoint strcture that contains Relation, Interface, and Payload data.
+// Expected format: relation:interface=JSON
+// Example: website:http={"private-address":"10.0.3.1", "hostname":"10.0.3.1", "port":"6543"}
+func ParseVirtualEndpoint(data string) (VirtualEndpoint, error) {
+	var endpoint VirtualEndpoint
+
+	relation_index := strings.Index(data, ":")
 	if relation_index == -1 {
-		return endpoint, fmt.Errorf("no relation index found in %q", str)
+		return endpoint, fmt.Errorf("no relation index found in %q", data)
 	}
-	endpoint.relation = strings.TrimSpace(str[:relation_index])
-	if endpoint.relation == "" {
-		return endpoint, fmt.Errorf("no relation name found in %q", str)
+	endpoint.Relation = strings.TrimSpace(data[:relation_index])
+	if endpoint.Relation == "" {
+		return endpoint, fmt.Errorf("no relation name found in %q", data)
 	}
 
-	interface_index := strings.Index(str, "=")
+	interface_index := strings.Index(data, "=")
 	if interface_index == -1 {
-		return endpoint, fmt.Errorf("no interface name found in %q", str)
+		return endpoint, fmt.Errorf("no interface name found in %q", data)
 	}
-	endpoint.iface = strings.TrimSpace(str[relation_index+1:interface_index])
-	if endpoint.iface == "" {
-		return endpoint, fmt.Errorf("no interface name found in %q", str)
-	}
-	// The JSON data to return is the string, not the map.
-	endpoint.data = strings.TrimSpace(str[interface_index+1:])
 
-	var data map[string]interface{}
-	if err := json.Unmarshal([]byte(endpoint.data), &data); err != nil {
-		return endpoint, fmt.Errorf("invalid JSON: %q", endpoint.data)
+	endpoint.Interface = strings.TrimSpace(data[relation_index+1:interface_index])
+	if endpoint.Interface == "" {
+		return endpoint, fmt.Errorf("no interface name found in %q", data)
+	}
+
+	json_data := strings.TrimSpace(data[interface_index+1:])
+	if err := json.Unmarshal([]byte(json_data), &endpoint.Payload); err != nil {
+		return endpoint, fmt.Errorf("invalid JSON: %+v", json_data)
 	}
 
 	return endpoint, nil
