@@ -1,0 +1,37 @@
+{
+  "endpoints":[
+    {
+      "relation":"website",
+      "interface":"http",
+      "values":[
+        {
+          "hostname":"10.0.3.1"
+        },
+        {
+          "port":"6543"
+        },
+        {
+          "private-address" :"10.0.3.1"
+        }
+      ]
+    },
+    {
+      "relation":"db",
+      "interface":"mysql",
+      "values":[
+        {
+          "database":"juju"
+        },
+        {
+          "user":"root"
+        },
+        {
+          "password": "root"
+        },
+        {
+          "private-address": "172.17.42.1"
+        }
+      ]
+    }
+  ]
+}
