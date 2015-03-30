@@ -1,0 +1,14 @@
+endpoints:
+- interface: http
+  relation: website
+  values:
+  - {hostname: 10.0.3.1}
+  - {port: '6543'}
+  - {private-address: 10.0.3.1}
+- interface: mysql
+  relation: db
+  values:
+  - {database: juju}
+  - {user: root}
+  - {password: root}
+  - {private-address: 172.17.42.1}
