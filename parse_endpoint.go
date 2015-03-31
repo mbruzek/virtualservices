@@ -6,9 +6,9 @@ import "strings"
 
 // VirtualEndpoint
 type VirtualEndpoint struct {
-	Relation string
-	Interface    string
-	Payload     map[string]interface{}
+	Interface string
+	Relation  string
+	Values    map[string]interface{}
 }
 
 // ParseVirtualEndpoint takes a single endpoint string and converts it to a
@@ -32,13 +32,13 @@ func ParseVirtualEndpoint(data string) (VirtualEndpoint, error) {
 		return endpoint, fmt.Errorf("no interface name found in %q", data)
 	}
 
-	endpoint.Interface = strings.TrimSpace(data[relation_index+1:interface_index])
+	endpoint.Interface = strings.TrimSpace(data[relation_index+1 : interface_index])
 	if endpoint.Interface == "" {
 		return endpoint, fmt.Errorf("no interface name found in %q", data)
 	}
 
 	json_data := strings.TrimSpace(data[interface_index+1:])
-	if err := json.Unmarshal([]byte(json_data), &endpoint.Payload); err != nil {
+	if err := json.Unmarshal([]byte(json_data), &endpoint.Values); err != nil {
 		return endpoint, fmt.Errorf("invalid JSON: %+v", json_data)
 	}
 
