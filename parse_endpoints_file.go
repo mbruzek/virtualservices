@@ -7,12 +7,12 @@ import "io/ioutil"
 // The VirtualEndpointConfig is a data structure to use to validate when reading
 // in the JSON or YAML file that contains virtual endpoint definition.
 // Example:
-// {"endpoints": [{"relation":"db", "interface":"mysql", "data":{"database":"juju", "user": "root", "password": "root", "private-address": "172.17.42.1"}}]}
+// {"endpoints": [{"relation":"db", "interface":"mysql", "values":{"database":"juju", "user": "root", "password": "root", "private-address": "172.17.42.1"}}]}
 type VirtualEndpointConfig struct {
 	Endpoints []struct {
-		Interface string                   `json:"interface" yaml:"interface"`
-		Relation  string                   `json:"relation" yaml:"relation"`
-		Values    []map[string]interface{} `json:"values" yaml:"values"`
+		Interface string                 `json:"interface" yaml:"interface"`
+		Relation  string                 `json:"relation" yaml:"relation"`
+		Values    map[string]interface{} `json:"values" yaml:"values"`
 	} `json:"endpoints" yaml:"endpoints"`
 }
 
@@ -32,29 +32,45 @@ func ParseGenericJSONFile(filepath string) (map[string][]map[string]interface{},
 }
 
 // parseVirtualEndpointsJSONFile reads in the JSON file converting the content
-// to the VirtualEndpointConfig struct.
-func ParseVirtualEndpointsJSONFile(filepath string) (VirtualEndpointConfig, error) {
+// to the VirtualEndpoint struct.
+func ParseVirtualEndpointsJSONFile(filepath string) ([]VirtualEndpoint, error) {
 	var jsonData VirtualEndpointConfig
 	contents, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return jsonData, err
+		return nil, err
 	}
 	if err := json.Unmarshal(contents, &jsonData); err != nil {
-		return jsonData, err
+		return nil, err
 	}
-	return jsonData, nil
+	var virtualEndpoints []VirtualEndpoint
+	for a := range jsonData.Endpoints {
+		var endpoint VirtualEndpoint
+		endpoint.Relation = jsonData.Endpoints[a].Relation
+		endpoint.Interface = jsonData.Endpoints[a].Interface
+		endpoint.Values = jsonData.Endpoints[a].Values
+		virtualEndpoints = append(virtualEndpoints, endpoint)
+	}
+	return virtualEndpoints, nil
 }
 
 // parseVirtualEndpointsYAMLFile reads in the YAML file converting the content
 // to the VirtualEndpointConfig struct.
-func ParseVirtualEndpointsYAMLFile(filepath string) (VirtualEndpointConfig, error) {
+func ParseVirtualEndpointsYAMLFile(filepath string) ([]VirtualEndpoint, error) {
 	var yamlData VirtualEndpointConfig
 	contents, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return yamlData, err
+		return nil, err
 	}
 	if err := yaml.Unmarshal(contents, &yamlData); err != nil {
-		return yamlData, err
+		return nil, err
 	}
-	return yamlData, nil
+	var virtualEndpoints []VirtualEndpoint
+	for a := range yamlData.Endpoints {
+		var endpoint VirtualEndpoint
+		endpoint.Relation = yamlData.Endpoints[a].Relation
+		endpoint.Interface = yamlData.Endpoints[a].Interface
+		endpoint.Values = yamlData.Endpoints[a].Values
+		virtualEndpoints = append(virtualEndpoints, endpoint)
+	}
+	return virtualEndpoints, nil
 }
