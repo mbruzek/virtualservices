@@ -13,12 +13,7 @@ func TestParseVirtualEndpointsJSONFile(t *testing.T) {
 	}
 	// Verify the go structure was filled in properly.
 	fmt.Printf("Testing JSON: %#v\n", jsonData)
-	if jsonData.Endpoints == nil || len(jsonData.Endpoints) == 0 {
-		t.Error("the endpoints array should not be empty")
-	}
-	fmt.Printf("Endpoints: %q\n", jsonData.Endpoints)
-	for a := range jsonData.Endpoints {
-		endpoint := jsonData.Endpoints[a]
+	for _, endpoint := range jsonData {
 		if endpoint.Relation == "" {
 			t.Error("the Relation cannot be empty string")
 		}
@@ -27,14 +22,13 @@ func TestParseVirtualEndpointsJSONFile(t *testing.T) {
 			t.Error("the Interface cannot be empty string")
 		}
 		fmt.Printf("Interface: %q\n", endpoint.Interface)
-		if len(endpoint.Values) == 0 {
-			t.Error("the Values cannot be empty")
-		}
+
 		fmt.Printf("Values: %#v\n", endpoint.Values)
-		for b := range endpoint.Values {
-			for key, value := range endpoint.Values[b] {
-				fmt.Printf("key: %q, value: %q\n", key, value)
-			}
+		if endpoint.Values == nil || len(endpoint.Values) == 0 {
+			t.Error("there are no values set.")
+		}
+		for key, value := range endpoint.Values {
+			fmt.Printf("key: %q, value: %q\n", key, value)
 		}
 	}
 	fmt.Println()
@@ -44,18 +38,13 @@ func TestParseVirtualEndpointsJSONFile(t *testing.T) {
 // to the VirtualEndpointConfig structure.
 func TestParseVirtualEndpointsYAMLFile(t *testing.T) {
 	filepath := "endpoints.yaml"
-	jsonData, err := ParseVirtualEndpointsYAMLFile(filepath)
+	yamlData, err := ParseVirtualEndpointsYAMLFile(filepath)
 	if err != nil {
 		t.Error(err)
 	}
 	// Verify the go structure was filled in properly.
-	fmt.Printf("Testing YAML: %#v\n", jsonData)
-	if jsonData.Endpoints == nil || len(jsonData.Endpoints) == 0 {
-		t.Error("the endpoints array should not be empty")
-	}
-	fmt.Printf("Endpoints: %q\n", jsonData.Endpoints)
-	for a := range jsonData.Endpoints {
-		endpoint := jsonData.Endpoints[a]
+	fmt.Printf("Testing YAML: %#v\n", yamlData)
+	for _, endpoint := range yamlData {
 		if endpoint.Relation == "" {
 			t.Error("the Relation cannot be empty string")
 		}
@@ -64,14 +53,13 @@ func TestParseVirtualEndpointsYAMLFile(t *testing.T) {
 			t.Error("the Interface cannot be empty string")
 		}
 		fmt.Printf("Interface: %q\n", endpoint.Interface)
-		if len(endpoint.Values) == 0 {
-			t.Error("the Values cannot be empty")
-		}
+
 		fmt.Printf("Values: %#v\n", endpoint.Values)
-		for b := range endpoint.Values {
-			for key, value := range endpoint.Values[b] {
-				fmt.Printf("key: %q, value: %q\n", key, value)
-			}
+		if endpoint.Values == nil || len(endpoint.Values) == 0 {
+			t.Error("there are no values set.")
+		}
+		for key, value := range endpoint.Values {
+			fmt.Printf("key: %q, value: %q\n", key, value)
 		}
 	}
 	fmt.Println()
