@@ -23,9 +23,9 @@ func TestParseEndpointPositive(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		fmt.Printf("Payload: %#v\n", endpoint.Payload)
-		if endpoint.Relation != a.rel || endpoint.Interface != a.iface || endpoint.Payload == nil {
-			t.Errorf("incorrect output returned %q for input %q", endpoint, a.input)
+		fmt.Printf("Values: %#v\n", endpoint.Values)
+		if endpoint.Relation != a.rel || endpoint.Interface != a.iface || endpoint.Values == nil {
+			t.Errorf("incorrect output returned %+v for input %s", endpoint, a.input)
 		}
 	}
 	fmt.Println()
@@ -49,7 +49,7 @@ func TestParseEndpointNegative(t *testing.T) {
 		endpoint, err := ParseVirtualEndpoint(b.input)
 		fmt.Printf("Endpoint: %#v\n", endpoint)
 		if err == nil {
-			t.Errorf("no error generated for bad input %q", b.input)
+			t.Errorf("no error generated for bad input %s", b.input)
 		}
 	}
 	fmt.Println()
